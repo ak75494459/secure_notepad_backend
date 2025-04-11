@@ -7,6 +7,7 @@ const multer = require("multer");
 const Gallery = require("./model/Gallery");
 const cloudinary = require("cloudinary").v2;
 
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -19,12 +20,14 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 });
 
-// Middleware
+
 app.use(cors());
 app.use(express.json()); // Parse JSON body
+
+
 
 // DB Connection
 mongoose
@@ -37,6 +40,8 @@ app.get("/health", (req, res) => {
   res.send("health is ok");
 });
 
+
+
 app.post("/signUp", async (req, res) => {
   try {
     const { password } = req.body;
@@ -46,6 +51,22 @@ app.post("/signUp", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: "Something went wrong" });
+  }
+});
+
+app.get("/api/secure-gallery/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const gallery = await Gallery.find({ user: userId });
+
+    if (!gallery || gallery.length === 0) {
+      return res.status(404).json({ message: "Gallery not found" });
+    }
+
+    res.json(gallery);
+  } catch (error) {
+    console.error("Error in fetching image:", error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 });
 
@@ -105,6 +126,14 @@ app.get("/api/secure-gallery", async (req, res) => {
     console.error("Error in fetching image:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
+});
+
+app.get('/secure-gallery/:id', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store'); // Disable caching
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  // Then continue sending your response
 });
 
 app.listen(PORT, () => {
