@@ -37,10 +37,6 @@ app.get("/health", (req, res) => {
   res.send("health is ok");
 });
 
-app.get("/gallary", (req, res) => {
-  res.send("getting gallary data");
-});
-
 app.post("/signUp", async (req, res) => {
   try {
     const { password } = req.body;
@@ -54,7 +50,7 @@ app.post("/signUp", async (req, res) => {
 });
 
 app.post(
-  "/secure-gallery/:id",
+  "/api/secure-gallery/:id",
   upload.array("imageFile", 10),
   async (req, res) => {
     try {
@@ -66,9 +62,11 @@ app.post(
         files.map((file) => uploadImage(file))
       );
 
+      const userId = req.params.id;
+
       const gallery = new Gallery({
         imageUrl: imageUrls,
-        user: req.body.user,
+        user: userId,
       });
 
       await gallery.save();
@@ -93,18 +91,18 @@ const uploadImage = async (file) => {
   }
 };
 
-app.get("/secure-gallery", async (req, res) => {
+app.get("/api/secure-gallery", async (req, res) => {
   try {
     const userId = req.query.user;
     const gallery = await Gallery.find({ user: userId });
 
-    if (!gallery) {
-      return res.status(404).json({ message: "gallery not found" });
+    if (!gallery || gallery.length === 0) {
+      return res.status(404).json({ message: "Gallery not found" });
     }
 
     res.json(gallery);
   } catch (error) {
-    console.error("error in fetching image:", error);
+    console.error("Error in fetching image:", error);
     res.status(500).json({ message: "Something went wrong" });
   }
 });
