@@ -136,6 +136,8 @@ app.get('/secure-gallery/:id', (req, res) => {
   // Then continue sending your response
 });
 
+app.disable('etag');
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
