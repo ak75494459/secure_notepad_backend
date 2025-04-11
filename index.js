@@ -37,6 +37,10 @@ app.get("/health", (req, res) => {
   res.send("health is ok");
 });
 
+app.get("/gallary", (req, res) => {
+  res.send("getting gallary data");
+});
+
 app.post("/signUp", async (req, res) => {
   try {
     const { password } = req.body;
