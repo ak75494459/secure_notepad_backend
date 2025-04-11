@@ -7,7 +7,6 @@ const multer = require("multer");
 const Gallery = require("./model/Gallery");
 const cloudinary = require("cloudinary").v2;
 
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -20,14 +19,11 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, 
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
-
 
 app.use(cors());
 app.use(express.json()); // Parse JSON body
-
-
 
 // DB Connection
 mongoose
@@ -39,8 +35,6 @@ mongoose
 app.get("/health", (req, res) => {
   res.send("health is ok");
 });
-
-
 
 app.post("/signUp", async (req, res) => {
   try {
@@ -127,16 +121,6 @@ app.get("/api/secure-gallery", async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 });
-
-app.get('/secure-gallery/:id', (req, res) => {
-  res.setHeader('Cache-Control', 'no-store'); // Disable caching
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  
-  // Then continue sending your response
-});
-
-app.disable('etag');
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
