@@ -36,6 +36,14 @@ app.get("/health", (req, res) => {
   res.send("health is ok");
 });
 
+app.get('/secure-gallery/:id', async (req, res) => {
+  const note = await db.findById(req.params.id);
+  if (!note) {
+    return res.status(404).send('Note not found');
+  }
+  res.send(note);
+});
+
 app.post("/signUp", async (req, res) => {
   try {
     const { password } = req.body;
